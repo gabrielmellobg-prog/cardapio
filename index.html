@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Drinks Menu</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --gold:#F5DA4B;--bg:#0a0a0a;--panel:#111;--border:rgba(245,218,75,0.18);
+  --gold-dim:rgba(245,218,75,0.10);--gold-mid:rgba(245,218,75,0.30);
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);}
+body{font-family:'Rajdhani',sans-serif;color:#fff;}
+ 
+/* scanlines */
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.06) 3px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:9998;}
+ 
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .35s,transform .35s;}
+.screen.hidden{opacity:0;pointer-events:none;transform:scale(0.97);}
+ 
+/* ══════════════════════════
+   BOOT
+══════════════════════════ */
+#boot{background:var(--bg);z-index:10;}
+ 
+.boot-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(245,218,75,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(245,218,75,.035) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;}
+.boot-corner{position:absolute;width:32px;height:32px;border-color:var(--gold);border-style:solid;opacity:.5;}
+.boot-corner.tl{top:20px;left:20px;border-width:2px 0 0 2px;}
+.boot-corner.tr{top:20px;right:20px;border-width:2px 2px 0 0;}
+.boot-corner.bl{bottom:20px;left:20px;border-width:0 0 2px 2px;}
+.boot-corner.br{bottom:20px;right:20px;border-width:0 2px 2px 0;}
+ 
+.boot-inner{text-align:center;position:relative;z-index:1;padding:0 32px;}
+.boot-logo{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(4rem,22vw,8rem);
+  letter-spacing:10px;
+  background:linear-gradient(160deg,#fff 30%,var(--gold) 70%,#c9a800);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  animation:flicker 4s infinite;
+  line-height:1;
+}
+@keyframes flicker{0%,92%,94%,100%{opacity:1;}93%{opacity:.3;}}
+.boot-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(245,218,75,.45);letter-spacing:5px;margin-top:10px;text-transform:uppercase;}
+.boot-press{
+  margin-top:56px;
+  font-family:'Share Tech Mono',monospace;font-size:13px;
+  color:var(--gold);letter-spacing:3px;
+  animation:blink 1.3s step-end infinite;
+  cursor:pointer;padding:16px 32px;
+  border:1px solid rgba(245,218,75,.25);
+  border-radius:2px;
+  background:rgba(245,218,75,.04);
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+ 
+/* ══════════════════════════
+   SELECT
+══════════════════════════ */
+#select{
+  background:var(--bg);
+  z-index:9;
+  overflow-y:auto;
+  justify-content:flex-start;
+  padding:0;
+}
+ 
+.select-top{
+  position:sticky;top:0;z-index:20;
+  width:100%;
+  padding:20px 20px 14px;
+  background:linear-gradient(to bottom,var(--bg) 80%,transparent);
+  text-align:center;
+  flex-shrink:0;
+}
+.select-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2rem,8vw,3rem);
+  letter-spacing:6px;
+  background:linear-gradient(180deg,#fff 30%,rgba(255,255,255,.4));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.select-sub{font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(245,218,75,.4);letter-spacing:3px;margin-top:4px;}
+ 
+.drinks-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:2px;
+  width:100%;
+  padding:0 2px 40px;
+}
+ 
+.drink-slot{
+  position:relative;
+  border:1px solid rgba(245,218,75,.08);
+  padding:18px 14px 22px;
+  cursor:pointer;
+  overflow:hidden;
+  transition:all .2s;
+  background:rgba(255,255,255,.012);
+  min-height:90px;
+  display:flex;flex-direction:column;
+  justify-content:space-between;
+  -webkit-tap-highlight-color:transparent;
+}
+.drink-slot:active{background:rgba(245,218,75,.1);border-color:rgba(245,218,75,.5);}
+.drink-slot::after{
+  content:'→';
+  position:absolute;right:10px;bottom:10px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:14px;color:rgba(245,218,75,.2);
+  transition:all .2s;
+}
+.drink-slot:active::after{color:var(--gold);}
+ 
+.slot-num{font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(245,218,75,.28);letter-spacing:2px;margin-bottom:8px;}
+.slot-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(1rem,4.5vw,1.4rem);letter-spacing:2px;color:#fff;line-height:1.1;}
+.slot-type{font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,.22);text-transform:uppercase;margin-top:5px;}
+.slot-prep{font-size:8px;color:rgba(245,218,75,.28);letter-spacing:1px;margin-top:2px;font-family:'Share Tech Mono',monospace;}
+ 
+.drink-slot.flash{animation:slotFlash .35s ease;}
+@keyframes slotFlash{0%{background:rgba(245,218,75,.22);}100%{background:transparent;}}
+ 
+/* ══════════════════════════
+   DRINK SCREEN — MOBILE VERTICAL
+══════════════════════════ */
+#drink-screen{
+  background:var(--bg);
+  z-index:8;
+  overflow:hidden;
+  justify-content:flex-start;
+}
+ 
+/* Top bar */
+.drink-topbar{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 16px 10px;
+  flex-shrink:0;
+  border-bottom:1px solid rgba(245,218,75,.08);
+  background:var(--bg);
+  position:relative;
+  z-index:10;
+}
+.back-btn{
+  display:flex;align-items:center;gap:6px;
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;
+  color:rgba(245,218,75,.55);cursor:pointer;border:none;background:none;padding:6px 0;
+  transition:color .2s;
+}
+.back-btn:active{color:var(--gold);}
+.topbar-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(1.1rem,5vw,1.5rem);
+  letter-spacing:3px;color:#fff;
+  text-align:center;flex:1;padding:0 8px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.topbar-serve{
+  font-family:'Share Tech Mono',monospace;
+  font-size:9px;color:rgba(245,218,75,.45);
+  letter-spacing:1px;text-align:right;
+  min-width:70px;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+ 
+/* Progress bar */
+.progress-wrap{width:100%;height:2px;background:rgba(255,255,255,.05);flex-shrink:0;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),#c9a800);width:0%;transition:width .5s ease;}
+ 
+/* Prep label */
+.prep-label{
+  width:100%;
+  padding:7px 16px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;
+  color:rgba(245,218,75,.5);
+  letter-spacing:2px;
+  background:rgba(245,218,75,.03);
+  border-bottom:1px solid rgba(245,218,75,.06);
+  flex-shrink:0;
+}
+ 
+/* Glass area */
+.glass-area{
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+  width:100%;
+  /* height set by JS based on screen */
+}
+ 
+.stage-glow{
+  position:absolute;
+  width:260px;height:260px;border-radius:50%;
+  bottom:-80px;left:50%;transform:translateX(-50%);
+  filter:blur(55px);opacity:.45;
+  transition:background 1.2s ease;
+  pointer-events:none;
+}
+ 
+.glass-container{position:relative;flex-shrink:0;}
+.glass-canvas{display:block;}
+.glass-svg-overlay{position:absolute;top:0;left:0;width:100%;height:100%;z-index:15;pointer-events:none;}
+.pour-stream{position:absolute;top:0;left:50%;transform:translateX(-50%);width:10px;border-radius:6px;z-index:20;pointer-events:none;opacity:0;}
+.pour-stream.active{animation:pourAnim .9s cubic-bezier(.4,0,.6,1) forwards;}
+@keyframes pourAnim{0%{opacity:0;height:0;top:-20px;}10%{opacity:1;}60%{opacity:1;height:120px;}85%{opacity:.6;height:70px;}100%{opacity:0;height:0;}}
+ 
+.splash-drop{position:absolute;border-radius:50%;pointer-events:none;z-index:25;animation:dropOut .5s ease-out forwards;}
+@keyframes dropOut{0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0);}}
+ 
+/* Done overlay on glass */
+.done-overlay{
+  display:none;
+  position:absolute;inset:0;
+  align-items:center;justify-content:center;flex-direction:column;gap:6px;
+  z-index:30;background:rgba(10,10,10,.55);
+}
+.done-overlay.show{display:flex;}
+.done-text{
+  font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:5px;
+  color:var(--gold);text-shadow:0 0 24px rgba(245,218,75,.6);
+  animation:popIn .4s cubic-bezier(.17,.67,.3,1.4) both;
+}
+@keyframes popIn{from{opacity:0;transform:scale(.7);}to{opacity:1;transform:scale(1);}}
+.replay-btn{
+  font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;
+  color:rgba(245,218,75,.65);background:rgba(10,10,10,.8);
+  border:1px solid rgba(245,218,75,.25);border-radius:3px;
+  padding:8px 20px;cursor:pointer;transition:all .2s;
+}
+.replay-btn:active{color:var(--gold);border-color:var(--gold);}
+ 
+/* Ingredient buttons */
+.ing-scroll{
+  flex:1;
+  overflow-y:auto;
+  width:100%;
+  padding:10px 12px 20px;
+  display:flex;flex-direction:column;gap:7px;
+  -webkit-overflow-scrolling:touch;
+}
+ 
+.ing-btn{
+  width:100%;display:flex;align-items:center;gap:12px;
+  padding:11px 14px;
+  background:rgba(255,255,255,.025);
+  border:1px solid rgba(245,218,75,.12);
+  border-radius:8px;
+  cursor:pointer;transition:all .18s;
+  font-family:'Rajdhani',sans-serif;color:#fff;
+  position:relative;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+  flex-shrink:0;
+}
+.ing-btn:active:not(.done):not(.pouring){border-color:rgba(245,218,75,.5);background:rgba(245,218,75,.08);}
+.ing-btn.done{border-color:rgba(245,218,75,.3);background:rgba(245,218,75,.03);opacity:.5;cursor:default;}
+.ing-btn.done::after{content:'✓';position:absolute;right:12px;color:var(--gold);font-size:15px;font-weight:700;}
+.ing-btn.pouring{border-color:var(--gold);background:rgba(245,218,75,.1);pointer-events:none;}
+.ing-btn.shake{animation:shake .28s ease;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+.ing-emoji{font-size:22px;flex-shrink:0;width:28px;text-align:center;}
+.ing-body{flex:1;min-width:0;}
+.ing-name{font-size:13px;font-weight:600;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ing-qty{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold);margin-top:1px;}
+ 
+/* Flash */
+#flash{position:fixed;inset:0;background:#F5DA4B;z-index:9999;opacity:0;pointer-events:none;transition:opacity .1s;}
+</style>
+</head>
+<body>
+<div id="flash"></div>
+ 
+<!-- ══ BOOT ══ -->
+<div class="screen" id="boot">
+  <div class="boot-grid"></div>
+  <div class="boot-corner tl"></div><div class="boot-corner tr"></div>
+  <div class="boot-corner bl"></div><div class="boot-corner br"></div>
+  <div class="boot-inner">
+    <div class="boot-logo">DRINKS</div>
+    <div class="boot-sub">Menu Interativo</div>
+    <div class="boot-press" onclick="goToSelect()">▶ &nbsp;TOQUE PARA INICIAR</div>
+  </div>
+</div>
+ 
+<!-- ══ SELECT ══ -->
+<div class="screen hidden" id="select">
+  <div class="select-top">
+    <div class="select-title">ESCOLHA SEU DRINK</div>
+    <div class="select-sub">// toque para ver o preparo</div>
+  </div>
+  <div class="drinks-grid" id="drinks-grid"></div>
+</div>
+ 
+<!-- ══ DRINK SCREEN ══ -->
+<div class="screen hidden" id="drink-screen">
+ 
+  <!-- top bar -->
+  <div class="drink-topbar">
+    <button class="back-btn" onclick="goBack()">← VOLTAR</button>
+    <div class="topbar-title" id="d-title"></div>
+    <div class="topbar-serve" id="d-serve"></div>
+  </div>
+ 
+  <!-- progress -->
+  <div class="progress-wrap"><div class="progress-fill" id="d-progress"></div></div>
+ 
+  <!-- prep label -->
+  <div class="prep-label" id="d-prep"></div>
+ 
+  <!-- glass -->
+  <div class="glass-area" id="glass-area">
+    <div class="stage-glow" id="stage-glow"></div>
+    <div class="glass-container" id="glass-container">
+      <canvas id="glass-canvas"></canvas>
+      <div class="pour-stream" id="pour-stream"></div>
+      <svg class="glass-svg-overlay" id="glass-svg" fill="none" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div class="done-overlay" id="done-overlay">
+      <div class="done-text">🍹 PRONTO!</div>
+      <button class="replay-btn" onclick="resetDrink()">↺ RECOMEÇAR</button>
+    </div>
+  </div>
+ 
+  <!-- ingredient buttons -->
+  <div class="ing-scroll" id="ing-scroll"></div>
+ 
+</div>
+ 
+<script>
+// ─────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────
+const DRINKS = [
+  {name:"Peaky Blinders",serve:"On the Rock",glass:"rock",prep:"Acrescente ao copo",finalColor:"rgba(180,100,20,0.82)",
+   ings:[{e:"🍯",n:"Xarope de melado de cana e rapadura",q:"25 ml",r:196,g:122,b:16},{e:"🍋",n:"Limão siciliano",q:"25 ml",r:212,g:216,b:32},{e:"🥃",n:"Whisky",q:"50 ml",r:200,g:144,b:48},{e:"🧊",n:"Gelo — misturar bem",q:"a gosto",r:180,g:230,b:248},{e:"✨",n:"Espuma",q:"por cima",r:240,g:240,b:240},{e:"🌰",n:"Pitada de noz-moscada",q:"decoração",r:180,g:100,b:40}]},
+  {name:"Gin Basil Smash",serve:"On the Rock",glass:"rock",prep:"Acrescente na coqueteleira",finalColor:"rgba(30,140,60,0.75)",
+   ings:[{e:"🍸",n:"Gin",q:"50 ml",r:192,g:234,b:248},{e:"🍬",n:"Xarope simples",q:"25 ml",r:240,g:232,b:128},{e:"🍋",n:"Limão taiti",q:"25 ml",r:176,g:216,b:32},{e:"🌿",n:"Manjericão — macerar levemente",q:"10 folhas",r:40,g:136,b:46},{e:"🧊",n:"Bata com gelo",q:"a gosto",r:180,g:230,b:248},{e:"🌿",n:"Borda açúcar de manjericão + folha",q:"decoração",r:100,g:180,b:80}]},
+  {name:"Fitzgerald",serve:"On the Rock",glass:"rock",prep:"Acrescente ao copo",finalColor:"rgba(200,60,100,0.78)",
+   ings:[{e:"🍋",n:"Limão siciliano",q:"25 ml",r:212,g:216,b:32},{e:"🍬",n:"Xarope de rosas",q:"50 ml",r:224,g:140,b:160},{e:"🍸",n:"Dose de Gin",q:"50 ml",r:192,g:234,b:248},{e:"🌶️",n:"Bitter",q:"2 dash",r:192,g:48,b:32},{e:"🥄",n:"Misture com a bailarina",q:"—",r:200,g:200,b:200},{e:"🍊",n:"Meia rodela de siciliano",q:"decoração",r:240,g:192,b:48}]},
+  {name:"Bramble",serve:"On the Rock",glass:"rock",prep:"Acrescente ao copo",finalColor:"rgba(80,30,160,0.8)",
+   ings:[{e:"🍸",n:"Gin",q:"50 ml",r:192,g:234,b:248},{e:"🍋",n:"Limão Taiti",q:"25 ml",r:176,g:216,b:32},{e:"🍬",n:"Xarope simples",q:"20 ml",r:240,g:232,b:128},{e:"🧊",n:"Misture bem com gelo",q:"a gosto",r:180,g:230,b:248},{e:"🫐",n:"Calda de Jabuticaba — forma circular",q:"a gosto",r:80,g:32,b:160},{e:"🍋",n:"Limão desidratado",q:"decoração",r:240,g:200,b:80}]},
+  {name:"Beleza Americana",serve:"On the Rock",glass:"rock",prep:"Acrescente ao copo",finalColor:"rgba(220,80,140,0.78)",
+   ings:[{e:"🍋",n:"Limão siciliano",q:"15 ml",r:212,g:216,b:32},{e:"🍋",n:"Limão taiti",q:"15 ml",r:176,g:216,b:32},{e:"🍸",n:"Dose de Gin ou Vodka",q:"50 ml",r:192,g:234,b:248},{e:"🌹",n:"Xarope de rosas",q:"50 ml",r:224,g:96,b:128},{e:"🌸",n:"Pétala de rosa",q:"decoração",r:248,g:176,b:200}]},
+  {name:"Meu Primeiro Amor",serve:"Taça de Gin",glass:"gin",prep:"Acrescente na taça",finalColor:"rgba(200,80,60,0.72)",
+   ings:[{e:"🍋",n:"Limão taiti",q:"40 ml",r:176,g:216,b:32},{e:"🍸",n:"Gin",q:"50 ml",r:192,g:234,b:248},{e:"🍓",n:"Xarope de amora",q:"25 ml",r:192,g:24,b:80},{e:"🧊",n:"Gelo e água tônica — até quase completar",q:"completar",r:208,g:244,b:255},{e:"🍍",n:"Espuma de abacaxi com siciliano",q:"por cima",r:248,g:240,b:144},{e:"🍊",n:"Rodela de laranja",q:"decoração",r:240,g:144,b:48}]},
+  {name:"Moscow/London Mule",serve:"Caneca de Cobre",glass:"mug",prep:"Acrescente na caneca",finalColor:"rgba(0,180,160,0.72)",
+   ings:[{e:"🍋",n:"Limão taiti",q:"25 ml",r:176,g:216,b:32},{e:"🍸",n:"Gin ou Vodka",q:"50 ml",r:192,g:234,b:248},{e:"🫚",n:"Xarope de gengibre",q:"50 ml",r:200,g:128,b:32},{e:"🧊",n:"Gelos maiores + água com gás",q:"completar",r:208,g:248,b:248},{e:"✨",n:"Espuma",q:"por cima",r:240,g:240,b:240},{e:"🍋",n:"Limão desidratado ou hortelã",q:"decoração",r:200,g:230,b:120}]},
+  {name:"Aperol Spritz",serve:"Taça de Gin",glass:"gin",prep:"Acrescente no copo",finalColor:"rgba(240,90,20,0.78)",
+   ings:[{e:"🍾",n:"Espumante",q:"100 ml",r:240,g:232,b:96},{e:"🍊",n:"Aperol",q:"75 ml",r:240,g:80,b:16},{e:"💧",n:"Água gasosa ou tônica",q:"50 ml",r:208,g:240,b:255},{e:"🍊",n:"Rodela de laranja",q:"01 unid.",r:240,g:144,b:32},{e:"🧊",n:"Gelo",q:"a gosto",r:180,g:230,b:248}]},
+  {name:"Penicillin",serve:"On the Rock",glass:"rock",prep:"Acrescente ao copo",finalColor:"rgba(200,150,30,0.82)",
+   ings:[{e:"🍯",n:"Xarope de mel",q:"25 ml",r:196,g:160,b:20},{e:"🍋",n:"Limão siciliano",q:"25 ml",r:212,g:216,b:32},{e:"🫚",n:"Xarope de gengibre",q:"20 ml",r:200,g:128,b:32},{e:"🥃",n:"Whisky",q:"50 ml",r:200,g:144,b:48},{e:"🧊",n:"Misturar bem com gelo",q:"a gosto",r:180,g:230,b:248},{e:"🍋",n:"Limão desidratado",q:"decoração",r:240,g:200,b:80}]},
+  {name:"Perfume de Mulher",serve:"Ilha Bela Long Drink",glass:"longdrink",prep:"Acrescente na coqueteleira",finalColor:"rgba(220,60,80,0.75)",
+   ings:[{e:"🍉",n:"Melancia — macerar 2 pedaços",q:"2 pedaços",r:220,g:60,b:80},{e:"🌺",n:"Maracujá",q:"01 concha",r:240,g:140,b:40},{e:"🍋",n:"Limão taiti",q:"25 ml",r:176,g:216,b:32},{e:"🍹",n:"Rum",q:"50 ml",r:200,g:100,b:30},{e:"🍊",n:"Xarope de tangerina",q:"25 ml",r:240,g:160,b:40},{e:"🧊",n:"Bata com gelo — coagem simples",q:"a gosto",r:180,g:230,b:248},{e:"✨",n:"Espuma de siciliano + raminho de alecrim",q:"decoração",r:240,g:240,b:240}]},
+  {name:"O Último Samurai",serve:"Ilha Bela Long Drink",glass:"longdrink",prep:"Acrescente na coqueteleira",finalColor:"rgba(100,60,160,0.75)",
+   ings:[{e:"🍇",n:"Uvas — encher o fundo",q:"a gosto",r:120,g:60,b:160},{e:"🍬",n:"Xarope simples",q:"20 ml",r:240,g:232,b:128},{e:"🧊",n:"Macerar",q:"—",r:180,g:180,b:200},{e:"🍋",n:"Limão taiti",q:"15 ml",r:176,g:216,b:32},{e:"🍸",n:"Vodka ou Sake",q:"50 ml",r:192,g:234,b:248},{e:"🌿",n:"Manjericão — bata com gelo",q:"5-6 folhas",r:40,g:136,b:46},{e:"🌿",n:"Ramo pequeno de manjericão",q:"decoração",r:80,g:160,b:60}]},
+  {name:"Show Bar",serve:"Lagoão",glass:"longdrink",prep:"Acrescente na coqueteleira",finalColor:"rgba(180,40,80,0.78)",
+   ings:[{e:"🍋",n:"Limão Siciliano — macerar 2 canoas",q:"2 canoas",r:212,g:216,b:32},{e:"🍓",n:"Collins Morango",q:"100 ml",r:220,g:40,b:80},{e:"🍋",n:"Limão Siciliano",q:"10 ml",r:212,g:216,b:32},{e:"🍬",n:"Xarope Showbar",q:"50 ml",r:240,g:180,b:60},{e:"🍸",n:"Vodka",q:"50 ml",r:192,g:234,b:248},{e:"🧊",n:"Bata com gelo",q:"a gosto",r:180,g:230,b:248},{e:"🌶️",n:"Pimenta dedo de moça — dentro do copo",q:"decoração",r:200,g:40,b:40}]},
+  {name:"Patch Adams",serve:"Taça de Gin",glass:"gin",prep:"Acrescente na taça",finalColor:"rgba(200,80,200,0.72)",
+   ings:[{e:"🍊",n:"Rodela de siciliano",q:"01 unid.",r:240,g:200,b:60},{e:"🍋",n:"Limão taiti",q:"15 ml",r:176,g:216,b:32},{e:"🍸",n:"Gin",q:"50 ml",r:192,g:234,b:248},{e:"🌺",n:"Xarope de maracujá vermelho",q:"25 ml",r:220,g:80,b:160},{e:"🧊",n:"Gelo e água tônica — até quase completar",q:"completar",r:208,g:244,b:255},{e:"✨",n:"Espuma de tangerina + ramo de alecrim",q:"decoração",r:240,g:180,b:80}]},
+  {name:"Dirty Dancing",serve:"Ilha Bela",glass:"longdrink",prep:"Acrescente na coqueteleira",finalColor:"rgba(160,30,100,0.8)",
+   ings:[{e:"🍓",n:"Colins morangos",q:"70 ml",r:220,g:40,b:80},{e:"🫐",n:"Colins amoras",q:"30 ml",r:80,g:32,b:160},{e:"🍸",n:"Vodka",q:"50 ml",r:192,g:234,b:248},{e:"🌺",n:"Xarope de maracujá vermelho",q:"15 ml",r:220,g:80,b:160},{e:"🍇",n:"Licor de Cassis",q:"15 ml",r:100,g:20,b:120},{e:"🍋",n:"Limão taiti",q:"15 ml",r:176,g:216,b:32},{e:"🧊",n:"Bata com gelo e sirva",q:"a gosto",r:180,g:230,b:248}]},
+  {name:"Negroni",serve:"On the Rock",glass:"rock",prep:"Acrescente ao copo",finalColor:"rgba(200,40,40,0.82)",
+   ings:[{e:"🍊",n:"Dose de Campari",q:"25 ml",r:200,g:40,b:40},{e:"🍸",n:"Dose de Gin",q:"25 ml",r:192,g:234,b:248},{e:"🍷",n:"Dose de Vermouth (Martini)",q:"25 ml",r:160,g:40,b:80},{e:"🍊",n:"01 pequeno dash de laranja bahia",q:"1 dash",r:240,g:144,b:32},{e:"🧊",n:"Misture e sirva com gelos maiores",q:"a gosto",r:180,g:230,b:248},{e:"🍊",n:"01 zest de laranja bahia",q:"decoração",r:240,g:144,b:32}]},
+  {name:"Capitães da Areia",serve:"On the Rock",glass:"rock",prep:"Acrescente na coqueteleira",finalColor:"rgba(180,120,40,0.8)",
+   ings:[{e:"🌺",n:"Maracujá",q:"2 conchas",r:240,g:200,b:40},{e:"🍋",n:"Limão taiti",q:"10 ml",r:176,g:216,b:32},{e:"🥃",n:"Cachaça",q:"50 ml",r:200,g:160,b:60},{e:"🫙",n:"Xarope de canela",q:"50 ml",r:180,g:80,b:20},{e:"🌿",n:"Cravos",q:"06 unid.",r:120,g:60,b:20},{e:"🧊",n:"Bata com gelo — coagem simples",q:"a gosto",r:180,g:230,b:248},{e:"🪵",n:"Canela em pau",q:"decoração",r:160,g:80,b:20}]},
+  {name:"Bem Vindo à Selva",serve:"Ilha Bela",glass:"longdrink",prep:"Acrescente ao copo",finalColor:"rgba(60,20,100,0.82)",
+   ings:[{e:"🍸",n:"Vodka",q:"50 ml",r:192,g:234,b:248},{e:"🧊",n:"Gelo",q:"completar",r:176,g:224,b:240},{e:"🫐",n:"Açaí + xarope de banana + energético",q:"a gosto",r:60,g:20,b:100}]},
+  {name:"Madame Satã",serve:"Lagoão",glass:"longdrink",prep:"Acrescente na coqueteleira",finalColor:"rgba(180,100,20,0.8)",
+   ings:[{e:"🍋",n:"Limão capeta — cortado em canoas",q:"1 limão",r:200,g:220,b:40},{e:"🍯",n:"Xarope de mel — macerar",q:"50 ml",r:196,g:160,b:20},{e:"🥃",n:"Cachaça de jambu",q:"50 ml",r:200,g:160,b:60},{e:"🧊",n:"Bata com gelo",q:"a gosto",r:180,g:230,b:248},{e:"🍬",n:"Borda de açúcar de canela",q:"decoração",r:200,g:140,b:40}]},
+  {name:"O Mágico de Oz",serve:"Taça de Gin",glass:"gin",prep:"Acrescente ao copo",finalColor:"rgba(30,160,80,0.75)",
+   ings:[{e:"🧂",n:"Borda de sal de alecrim",q:"borda",r:240,g:240,b:220},{e:"🌿",n:"6 folhas de hortelã — macerar levemente",q:"6 folhas",r:40,g:180,b:80},{e:"🍸",n:"Gin",q:"50 ml",r:192,g:234,b:248},{e:"🍐",n:"Xarope de pera",q:"50 ml",r:200,g:230,b:100},{e:"🍋",n:"Limão taiti",q:"25 ml",r:176,g:216,b:32},{e:"💧",n:"Misturar com gelo e completar c/ água com gás",q:"completar",r:208,g:248,b:255}]},
+  {name:"Memórias de uma Gueixa",serve:"On the Rock",glass:"rock",prep:"Acrescente na coqueteleira",finalColor:"rgba(240,180,200,0.75)",
+   ings:[{e:"🍈",n:"Xarope de lichia",q:"25 ml",r:240,g:200,b:220},{e:"🍋",n:"Suco de siciliano",q:"25 ml",r:212,g:216,b:32},{e:"🍶",n:"Saquê",q:"100 ml",r:240,g:240,b:240},{e:"🧊",n:"Bata com gelo — coagem simples",q:"a gosto",r:180,g:230,b:248},{e:"🧂",n:"Borda de sal de pimenta rosa",q:"decoração",r:220,g:120,b:140}]},
+  {name:"Triplo X",serve:"Taça de Gin",glass:"gin",prep:"Acrescente na coqueteleira",finalColor:"rgba(180,220,60,0.75)",
+   ings:[{e:"🍋",n:"Limão siciliano — macerar 2 canoas",q:"2 canoas",r:212,g:216,b:32},{e:"🍋",n:"Limão taiti — macerar 2 canoas",q:"2 canoas",r:176,g:216,b:32},{e:"🌶️",n:"Limão capeta — macerar 2 canoas",q:"2 canoas",r:200,g:220,b:40},{e:"🌿",n:"Xarope Capim Limão",q:"50 ml",r:160,g:220,b:60},{e:"🍬",n:"Xarope simples",q:"10 ml",r:240,g:232,b:128},{e:"🥃",n:"Cachaça",q:"50 ml",r:200,g:160,b:60},{e:"🧊",n:"Bata com gelo e sirva",q:"a gosto",r:180,g:230,b:248}]},
+  {name:"Indiana Jones",serve:"Lagoão",glass:"longdrink",prep:"Acrescente no copo",finalColor:"rgba(240,160,40,0.78)",
+   ings:[{e:"🌿",n:"Hortelã — macerar levemente",q:"4-5 folhas",r:40,g:180,b:80},{e:"🍋",n:"Limão siciliano",q:"25 ml",r:212,g:216,b:32},{e:"🍋",n:"Limão taiti",q:"10 ml",r:176,g:216,b:32},{e:"🥜",n:"Xarope de amêndoas",q:"10 ml",r:200,g:140,b:60},{e:"🍊",n:"Xarope de tangerina",q:"40 ml",r:240,g:160,b:40},{e:"🍶",n:"Sake ou Vodka",q:"50 ml",r:192,g:234,b:248},{e:"🍬",n:"Borda de açúcar de canela",q:"decoração",r:200,g:140,b:40}]},
+  {name:"Mad Max",serve:"On the Rock",glass:"rock",prep:"Acrescente na coqueteleira",finalColor:"rgba(200,150,40,0.82)",
+   ings:[{e:"🌺",n:"Maracujá",q:"02 conchas",r:240,g:200,b:40},{e:"🍋",n:"Limão taiti",q:"10 ml",r:176,g:216,b:32},{e:"🍮",n:"Xarope Caramelo Salgado",q:"25 ml",r:200,g:140,b:30},{e:"🥃",n:"Whisky",q:"50 ml",r:200,g:144,b:48},{e:"🧊",n:"Bata com gelo — coagem simples",q:"a gosto",r:180,g:230,b:248},{e:"🌿",n:"1 folha de louro",q:"decoração",r:80,g:140,b:60}]},
+  {name:"Ainda Estou Aqui",serve:"Long Drink",glass:"longdrink",prep:"Acrescente na coqueteleira",finalColor:"rgba(100,200,80,0.75)",
+   ings:[{e:"🍋",n:"Limão siciliano — macerar 2 canoas",q:"2 canoas",r:212,g:216,b:32},{e:"🌶️",n:"Limão capeta — macerar 2 canoas",q:"2 canoas",r:200,g:220,b:40},{e:"🍋",n:"Limão taiti",q:"10 ml",r:176,g:216,b:32},{e:"🍐",n:"Xarope Pera",q:"50 ml",r:200,g:230,b:100},{e:"🍸",n:"Vodka",q:"50 ml",r:192,g:234,b:248},{e:"🌿",n:"Manjericão",q:"8 folhas",r:40,g:136,b:46},{e:"🧊",n:"Bata com gelo — coagem simples",q:"a gosto",r:180,g:230,b:248},{e:"🌿",n:"Ramo pequeno de manjericão",q:"decoração",r:80,g:160,b:60}]},
+  {name:"È Diferente",serve:"Taça de Gin",glass:"gin",prep:"Acrescente ao copo",finalColor:"rgba(30,160,80,0.75)",
+   ings:[{e:"🧂",n:"Borda de sal de alecrim",q:"borda",r:240,g:240,b:220},{e:"🌿",n:"6 folhas de hortelã — macerar levemente",q:"6 folhas",r:40,g:180,b:80},{e:"🍸",n:"Gin",q:"50 ml",r:192,g:234,b:248},{e:"🍐",n:"Xarope de pera",q:"50 ml",r:200,g:230,b:100},{e:"🍋",n:"Limão taiti",q:"25 ml",r:176,g:216,b:32},{e:"💧",n:"Misturar com gelo e completar c/ água com gás",q:"completar",r:208,g:248,b:255}]}
+];
+ 
+// ─────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────
+let currentDrink=null, currentIdx=0, doneCount=0, isPouring=false, liquidLayers=[];
+ 
+// ─────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────
+function flashGo(cb){
+  const f=document.getElementById('flash');
+  f.style.opacity='1';
+  setTimeout(()=>{f.style.opacity='0';cb&&cb();},110);
+}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+function goToSelect(){flashGo(()=>showScreen('select'));}
+function goBack(){flashGo(()=>showScreen('select'));}
+ 
+// ─────────────────────────────────────────
+// BUILD GRID
+// ─────────────────────────────────────────
+(function(){
+  const g=document.getElementById('drinks-grid');
+  DRINKS.forEach((d,i)=>{
+    const el=document.createElement('div');
+    el.className='drink-slot';
+    el.innerHTML=`<div><div class="slot-num">${String(i+1).padStart(2,'0')}</div><div class="slot-name">${d.name}</div></div><div><div class="slot-type">${d.serve}</div><div class="slot-prep">${d.prep}</div></div>`;
+    el.addEventListener('click',()=>openDrink(i));
+    g.appendChild(el);
+  });
+})();
+ 
+// ─────────────────────────────────────────
+// GLASS DRAWING
+// ─────────────────────────────────────────
+function glassShape(type){
+  if(type==='rock')    return {tx1:16,tx2:144,bx1:24,bx2:136,ty:28,by:196,bh:8};
+  if(type==='gin')     return {tx1:8,tx2:152,bx1:58,bx2:102,ty:16,by:194,bh:10};
+  if(type==='mug')     return {tx1:18,tx2:142,bx1:22,bx2:138,ty:24,by:194,bh:10};
+  /* longdrink */      return {tx1:20,tx2:140,bx1:28,bx2:132,ty:16,by:196,bh:8};
+}
+ 
+function drawGlass(canvas, type, layers, iceCount){
+  const W=canvas.width, H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  const g=glassShape(type);
+ 
+  function xAtY(y){
+    const t=(y-g.ty)/(g.by-g.ty);
+    return{lx:g.tx1+(g.bx1-g.tx1)*t, rx:g.tx2+(g.bx2-g.tx2)*t};
+  }
+ 
+  // clip to glass interior
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(g.tx1,g.ty);ctx.lineTo(g.tx2,g.ty);
+  ctx.lineTo(g.bx2,g.by);ctx.lineTo(g.bx2,g.by+g.bh);
+  ctx.lineTo(g.bx1,g.by+g.bh);ctx.lineTo(g.bx1,g.by);
+  ctx.closePath();ctx.clip();
+  ctx.fillStyle='rgba(20,20,10,0.5)';ctx.fillRect(0,0,W,H);
+ 
+  // liquid layers
+  const usableH=g.by-g.ty-6;
+  let bottom=g.by-4;
+  layers.forEach(l=>{
+    const lH=Math.min(l.pct*usableH,usableH);
+    const top=Math.max(bottom-lH,g.ty+2);
+    const {lx:lb,rx:rb}=xAtY(bottom);
+    const {lx:lt,rx:rt}=xAtY(top);
+    const grad=ctx.createLinearGradient(0,top,0,bottom);
+    grad.addColorStop(0,`rgba(${l.r},${l.g},${l.b},${l.a*.65})`);
+    grad.addColorStop(1,`rgba(${l.r},${l.g},${l.b},${l.a})`);
+    ctx.beginPath();ctx.moveTo(lb,bottom);ctx.lineTo(rb,bottom);ctx.lineTo(rt,top);ctx.lineTo(lt,top);ctx.closePath();
+    ctx.fillStyle=grad;ctx.fill();
+    ctx.beginPath();ctx.moveTo(lt+3,top+2);ctx.lineTo(rt-3,top+2);
+    ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=1.5;ctx.stroke();
+    bottom=top;
+  });
+  ctx.restore();
+ 
+  // ice
+  if(iceCount>0){
+    const icePos=[{x:44,y:165,r:-12},{x:78,y:172,r:8},{x:62,y:152,r:-4},{x:96,y:160,r:14},{x:50,y:142,r:18}];
+    for(let i=0;i<Math.min(iceCount,icePos.length);i++){
+      const p=icePos[i];
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r*Math.PI/180);
+      const ig=ctx.createLinearGradient(-12,-8,12,8);
+      ig.addColorStop(0,'rgba(210,240,255,0.88)');ig.addColorStop(.5,'rgba(170,215,240,0.6)');ig.addColorStop(1,'rgba(200,235,255,0.42)');
+      ctx.fillStyle=ig;ctx.strokeStyle='rgba(255,255,255,0.55)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.roundRect(-12,-8,24,16,3);ctx.fill();ctx.stroke();
+      ctx.fillStyle='rgba(255,255,255,0.5)';ctx.beginPath();ctx.roundRect(-8,-5,8,3,2);ctx.fill();
+      ctx.restore();
+    }
+  }
+ 
+  // glass outline
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(g.tx1,g.ty);ctx.lineTo(g.bx1,g.by);ctx.lineTo(g.bx1,g.by+g.bh);ctx.lineTo(g.bx2,g.by+g.bh);ctx.lineTo(g.bx2,g.by);ctx.lineTo(g.tx2,g.ty);
+  const og=ctx.createLinearGradient(0,g.ty,W,g.by);
+  og.addColorStop(0,'rgba(255,255,255,0.5)');og.addColorStop(.5,'rgba(255,255,255,0.15)');og.addColorStop(1,'rgba(255,255,255,0.4)');
+  ctx.strokeStyle=og;ctx.lineWidth=2;ctx.stroke();
+  ctx.beginPath();ctx.moveTo(g.tx1+7,g.ty+8);ctx.lineTo(g.bx1+9,g.by-8);
+  ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=3;ctx.lineCap='round';ctx.stroke();
+  ctx.restore();
+ 
+  // mug handle
+  if(type==='mug'){
+    ctx.save();
+    ctx.beginPath();ctx.arc(g.bx2+16,(g.ty+g.by)/2,22,-Math.PI*.5,Math.PI*.5);
+    ctx.strokeStyle='rgba(180,100,30,0.65)';ctx.lineWidth=7;ctx.stroke();
+    ctx.strokeStyle='rgba(220,150,60,0.35)';ctx.lineWidth=2.5;ctx.stroke();
+    ctx.restore();
+  }
+}
+ 
+function redrawGlass(ice){
+  const canvas=document.getElementById('glass-canvas');
+  drawGlass(canvas,currentDrink.glass,liquidLayers,ice?4:0);
+}
+ 
+// ─────────────────────────────────────────
+// OPEN DRINK
+// ─────────────────────────────────────────
+function openDrink(i){
+  const slot=document.querySelectorAll('.drink-slot')[i];
+  slot.classList.add('flash');setTimeout(()=>slot.classList.remove('flash'),350);
+  currentDrink=DRINKS[i];currentIdx=i;doneCount=0;isPouring=false;liquidLayers=[];
+  buildDrinkScreen();
+  flashGo(()=>showScreen('drink-screen'));
+}
+ 
+function buildDrinkScreen(){
+  const d=currentDrink;
+ 
+  // topbar
+  document.getElementById('d-title').textContent=d.name;
+  document.getElementById('d-serve').textContent=d.serve;
+  document.getElementById('d-prep').textContent='▸ '+d.prep;
+  document.getElementById('d-progress').style.width='0%';
+  document.getElementById('done-overlay').classList.remove('show');
+  document.getElementById('stage-glow').style.background='rgba(245,218,75,0.12)';
+ 
+  // size glass responsively
+  const vw=window.innerWidth;
+  const GW=Math.min(Math.round(vw*0.44),160);
+  const GH=Math.round(GW*1.56);
+  const canvas=document.getElementById('glass-canvas');
+  canvas.width=GW; canvas.height=GH;
+  canvas.style.width=GW+'px'; canvas.style.height=GH+'px';
+  document.getElementById('glass-container').style.width=GW+'px';
+  document.getElementById('glass-container').style.height=GH+'px';
+  document.getElementById('glass-svg').setAttribute('viewBox',`0 0 ${GW} ${GH}`);
+  document.getElementById('glass-svg').innerHTML=`<text x="${GW/2}" y="${GH-4}" text-anchor="middle" font-family="Share Tech Mono,monospace" font-size="8" fill="rgba(245,218,75,0.3)" letter-spacing="1">${({rock:'On the Rock',gin:'Taça de Gin',mug:'Caneca',longdrink:'Long Drink'})[d.glass]||''}</text>`;
+ 
+  // set glass area height
+  const topbarH=document.querySelector('.drink-topbar').offsetHeight;
+  const progressH=2, prepH=document.querySelector('.prep-label').offsetHeight||30;
+  const areaH=Math.round(window.innerHeight*0.38);
+  document.getElementById('glass-area').style.height=areaH+'px';
+ 
+  redrawGlass(true);
+ 
+  // ingredient buttons
+  document.getElementById('ing-scroll').innerHTML=d.ings.map((ing,j)=>`
+    <button class="ing-btn" id="ib-${j}" onclick="pour(${j})">
+      <span class="ing-emoji">${ing.e}</span>
+      <div class="ing-body">
+        <div class="ing-name">${ing.n}</div>
+        <div class="ing-qty">${ing.q}</div>
+      </div>
+    </button>`).join('');
+}
+ 
+// ─────────────────────────────────────────
+// POUR
+// ─────────────────────────────────────────
+function pour(idx){
+  const d=currentDrink;
+  if(isPouring) return;
+  if(idx!==doneCount){
+    const btn=document.getElementById(`ib-${idx}`);
+    btn.classList.remove('shake');void btn.offsetWidth;btn.classList.add('shake');
+    return;
+  }
+  isPouring=true;
+  const ing=d.ings[idx];
+  document.getElementById(`ib-${idx}`).classList.add('pouring');
+ 
+  const stream=document.getElementById('pour-stream');
+  stream.style.background=`linear-gradient(to bottom,rgba(${ing.r},${ing.g},${ing.b},.9),rgba(${ing.r},${ing.g},${ing.b},.45))`;
+  stream.style.boxShadow=`0 0 8px rgba(${ing.r},${ing.g},${ing.b},.5)`;
+  stream.classList.remove('active');void stream.offsetWidth;stream.classList.add('active');
+ 
+  setTimeout(()=>{
+    const pct=0.74/d.ings.length;
+    liquidLayers.push({r:ing.r,g:ing.g,b:ing.b,a:.84,pct});
+    redrawGlass(true);
+    splash(ing);
+    document.getElementById('stage-glow').style.background=`radial-gradient(circle,rgba(${ing.r},${ing.g},${ing.b},.32) 0%,transparent 70%)`;
+  },440);
+ 
+  setTimeout(()=>{
+    stream.classList.remove('active');
+    document.getElementById(`ib-${idx}`).classList.remove('pouring');
+    document.getElementById(`ib-${idx}`).classList.add('done');
+    doneCount++;
+    document.getElementById('d-progress').style.width=(doneCount/d.ings.length*100)+'%';
+    isPouring=false;
+    if(doneCount===d.ings.length) onDone();
+  },1050);
+}
+ 
+function splash(ing){
+  const stage=document.getElementById('glass-area');
+  const gc=document.getElementById('glass-container');
+  const gr=gc.getBoundingClientRect();
+  const sr=stage.getBoundingClientRect();
+  const cx=gr.left+gr.width/2-sr.left;
+  const cy=gr.top+60-sr.top;
+  for(let i=0;i<12;i++){
+    const el=document.createElement('div');
+    el.className='splash-drop';
+    const a=(i/12)*Math.PI*2;
+    const dist=18+Math.random()*28;
+    el.style.setProperty('--tx',Math.cos(a)*dist+'px');
+    el.style.setProperty('--ty',(Math.sin(a)*dist-12)+'px');
+    el.style.width=el.style.height=(3+Math.random()*5)+'px';
+    el.style.background=`rgba(${ing.r},${ing.g},${ing.b},.8)`;
+    el.style.left=cx+'px';el.style.top=cy+'px';
+    el.style.animationDuration=(0.3+Math.random()*0.25)+'s';
+    stage.appendChild(el);
+    setTimeout(()=>el.remove(),600);
+  }
+}
+ 
+function onDone(){
+  document.getElementById('done-overlay').classList.add('show');
+  // keep bubbles
+  for(let i=0;i<4;i++) setTimeout(()=>{
+    const layers=liquidLayers;if(!layers.length)return;
+    const l=layers[layers.length-1];
+    document.getElementById('stage-glow').style.background=`radial-gradient(circle,rgba(${l.r},${l.g},${l.b},.4) 0%,transparent 70%)`;
+  },i*400);
+}
+ 
+function resetDrink(){
+  liquidLayers=[];doneCount=0;isPouring=false;
+  buildDrinkScreen();
+}
+ 
+// keyboard (desktop fallback)
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&!document.getElementById('drink-screen').classList.contains('hidden')) goBack();
+  if((e.key===' '||e.key==='Enter')&&!document.getElementById('boot').classList.contains('hidden')) goToSelect();
+});
+</script>
+</body>
+</html>
