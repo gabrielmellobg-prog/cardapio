@@ -119,6 +119,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .slot-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(1rem,4.5vw,1.4rem);letter-spacing:2px;color:#fff;line-height:1.1;}
 .slot-type{font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,.22);text-transform:uppercase;margin-top:5px;}
 .slot-prep{font-size:8px;color:rgba(245,218,75,.28);letter-spacing:1px;margin-top:2px;font-family:'Share Tech Mono',monospace;}
+.slot-profile{font-size:9px;color:rgba(245,218,75,.55);letter-spacing:.5px;margin-top:4px;font-family:'Rajdhani',sans-serif;font-weight:600;}
  
 .drink-slot.flash{animation:slotFlash .35s ease;}
 @keyframes slotFlash{0%{background:rgba(245,218,75,.22);}100%{background:transparent;}}
@@ -249,28 +250,6 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   -webkit-overflow-scrolling:touch;
 }
  
-/* Ingredient area header with toggle */
-.ing-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:8px 14px 4px;
-  flex-shrink:0;
-  width:100%;
-}
-.ing-header-label{
-  font-family:'Share Tech Mono',monospace;font-size:9px;
-  color:rgba(245,218,75,.35);letter-spacing:3px;text-transform:uppercase;
-}
-.toggle-mode-btn{
-  font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1.5px;
-  color:rgba(245,218,75,.6);
-  background:rgba(245,218,75,.06);
-  border:1px solid rgba(245,218,75,.2);
-  border-radius:20px;padding:5px 12px;
-  cursor:pointer;transition:all .2s;
-  -webkit-tap-highlight-color:transparent;
-}
-.toggle-mode-btn:active{background:rgba(245,218,75,.18);color:var(--gold);}
- 
 /* ── LIST MODE ── */
 .ing-scroll{
   flex:1;overflow-y:auto;width:100%;
@@ -300,95 +279,6 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .ing-body{flex:1;min-width:0;}
 .ing-name{font-size:13px;font-weight:600;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .ing-qty{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold);margin-top:1px;}
- 
-/* ── FLASHCARD MODE ── */
-.card-grid{
-  flex:1;overflow-y:auto;width:100%;
-  padding:6px 12px 24px;
-  display:flex;
-  flex-direction:column;
-  gap:7px;
-  -webkit-overflow-scrolling:touch;
-}
- 
-/* 3D flip container — same strip size as ing-btn */
-.fc-wrap{
-  perspective:600px;
-  cursor:pointer;
-  -webkit-tap-highlight-color:transparent;
-  width:100%;
-  height:48px;
-  flex-shrink:0;
-}
-.fc-inner{
-  position:relative;width:100%;height:100%;
-  transform-style:preserve-3d;
-  transition:transform .45s cubic-bezier(.4,0,.2,1);
-  border-radius:8px;
-}
-.fc-wrap.flipped .fc-inner{transform:rotateY(180deg);}
- 
-.fc-face{
-  position:absolute;inset:0;
-  border-radius:8px;
-  display:flex;align-items:center;
-  backface-visibility:hidden;-webkit-backface-visibility:hidden;
-  overflow:hidden;
-  padding:0 14px;
-}
- 
-/* BACK face — hidden side (the "?" card) */
-.fc-back{
-  background:rgba(255,255,255,.025);
-  border:1px solid rgba(245,218,75,.14);
-  transform:rotateY(0deg);
-  justify-content:space-between;
-  gap:10px;
-}
-.fc-back-num{
-  font-family:'Share Tech Mono',monospace;font-size:10px;
-  color:rgba(245,218,75,.32);letter-spacing:2px;flex-shrink:0;
-}
-.fc-back-q{
-  font-size:18px;flex-shrink:0;
-  filter:drop-shadow(0 0 8px rgba(245,218,75,.3));
-  animation:qPulse 2s ease-in-out infinite;
-}
-@keyframes qPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
-.fc-back-hint{
-  font-family:'Share Tech Mono',monospace;font-size:9px;
-  color:rgba(245,218,75,.28);letter-spacing:1px;flex:1;text-align:right;
-}
- 
-/* golden shimmer on back */
-.fc-back::before{
-  content:'';position:absolute;inset:0;border-radius:8px;
-  background:linear-gradient(135deg,rgba(245,218,75,.06) 0%,transparent 50%,rgba(245,218,75,.03) 100%);
-  pointer-events:none;
-}
- 
-/* FRONT face — revealed ingredient */
-.fc-front{
-  background:rgba(245,218,75,.06);
-  border:1px solid rgba(245,218,75,.35);
-  transform:rotateY(180deg);
-  gap:12px;
-  box-shadow:0 0 14px rgba(245,218,75,.08);
-}
-.fc-emoji{font-size:22px;flex-shrink:0;width:28px;text-align:center;filter:drop-shadow(0 2px 6px rgba(245,218,75,.3));}
-.fc-name{flex:1;min-width:0;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:#fff;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.fc-qty{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold);font-weight:600;flex-shrink:0;}
- 
-/* done state on flashcard */
-.fc-wrap.poured .fc-front{
-  background:rgba(245,218,75,.03);
-  border-color:rgba(245,218,75,.2);
-  opacity:.55;
-}
-.fc-wrap.poured .fc-front::after{
-  content:'✓';position:absolute;top:50%;right:10px;transform:translateY(-50%);
-  color:var(--gold);font-size:14px;font-weight:700;
-}
  
 /* Flash */
 #flash{position:fixed;inset:0;background:#F5DA4B;z-index:9999;opacity:0;pointer-events:none;transition:opacity .1s;}
@@ -448,13 +338,8 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     </div>
   </div>
  
-  <!-- ingredient area -->
-  <div class="ing-header">
-    <span class="ing-header-label">Ingredientes</span>
-    <button class="toggle-mode-btn" id="toggle-mode-btn" onclick="toggleMode()">🃏 ESCONDER</button>
-  </div>
+  <!-- ingredient buttons -->
   <div class="ing-scroll" id="ing-scroll"></div>
-  <div class="card-grid" id="card-grid" style="display:none;"></div>
  
 </div>
  
@@ -463,55 +348,55 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 // DATA
 // ─────────────────────────────────────────
 const DRINKS = [
-  {name:"Peaky Blinders",serve:"On the Rock",glass:"rock",prep:"Acrescente ao copo",finalColor:"rgba(180,100,20,0.82)",
+  {name:"Peaky Blinders",serve:"On the Rock",glass:"rock",prep:"Acrescente ao copo",profile:"🍯 Doce · Intenso",finalColor:"rgba(180,100,20,0.82)",
    ings:[{e:"🍯",n:"Xarope de melado de cana e rapadura",q:"25 ml",r:196,g:122,b:16},{e:"🍋",n:"Limão siciliano",q:"25 ml",r:212,g:216,b:32},{e:"🥃",n:"Whisky",q:"50 ml",r:200,g:144,b:48},{e:"🧊",n:"Gelo — misturar bem",q:"a gosto",r:180,g:230,b:248},{e:"✨",n:"Espuma",q:"por cima",r:240,g:240,b:240},{e:"🌰",n:"Pitada de noz-moscada",q:"decoração",r:180,g:100,b:40}]},
-  {name:"Gin Basil Smash",serve:"On the Rock",glass:"rock",prep:"Acrescente na coqueteleira",finalColor:"rgba(30,140,60,0.75)",
+  {name:"Gin Basil Smash",serve:"On the Rock",glass:"rock",prep:"Acrescente na coqueteleira",profile:"🌿 Herbal · Cítrico",finalColor:"rgba(30,140,60,0.75)",
    ings:[{e:"🍸",n:"Gin",q:"50 ml",r:192,g:234,b:248},{e:"🍬",n:"Xarope simples",q:"25 ml",r:240,g:232,b:128},{e:"🍋",n:"Limão taiti",q:"25 ml",r:176,g:216,b:32},{e:"🌿",n:"Manjericão — macerar levemente",q:"10 folhas",r:40,g:136,b:46},{e:"🧊",n:"Bata com gelo",q:"a gosto",r:180,g:230,b:248},{e:"🌿",n:"Borda açúcar de manjericão + folha",q:"decoração",r:100,g:180,b:80}]},
-  {name:"Fitzgerald",serve:"On the Rock",glass:"rock",prep:"Acrescente ao copo",finalColor:"rgba(200,60,100,0.78)",
-   ings:[{e:"🍋",n:"Limão siciliano",q:"25 ml",r:212,g:216,b:32},{e:"🍬",n:"Xarope de rosas",q:"50 ml",r:224,g:140,b:160},{e:"🍸",n:"Dose de Gin",q:"50 ml",r:192,g:234,b:248},{e:"🌶️",n:"Bitter",q:"2 dash",r:192,g:48,b:32},{e:"🥄",n:"Misture com a bailarina",q:"—",r:200,g:200,b:200},{e:"🍊",n:"Meia rodela de siciliano",q:"decoração",r:240,g:192,b:48}]},
-  {name:"Bramble",serve:"On the Rock",glass:"rock",prep:"Acrescente ao copo",finalColor:"rgba(80,30,160,0.8)",
+  {name:"Fitzgerald",serve:"On the Rock",glass:"rock",prep:"Acrescente ao copo",profile:"🍋 Cítrico · Intenso",finalColor:"rgba(200,60,100,0.78)",
+   ings:[{e:"🍋",n:"Limão siciliano",q:"25 ml",r:212,g:216,b:32},{e:"🍬",n:"Xarope simples",q:"50 ml",r:240,g:232,b:128},{e:"🍸",n:"Dose de Gin",q:"50 ml",r:192,g:234,b:248},{e:"🌶️",n:"Bitter",q:"2 dash",r:192,g:48,b:32},{e:"🥄",n:"Misture com a bailarina",q:"—",r:200,g:200,b:200},{e:"🍊",n:"Meia rodela de siciliano",q:"decoração",r:240,g:192,b:48}]},
+  {name:"Bramble",serve:"On the Rock",glass:"rock",prep:"Acrescente ao copo",profile:"🫐 Frutado · Cítrico",finalColor:"rgba(80,30,160,0.8)",
    ings:[{e:"🍸",n:"Gin",q:"50 ml",r:192,g:234,b:248},{e:"🍋",n:"Limão Taiti",q:"25 ml",r:176,g:216,b:32},{e:"🍬",n:"Xarope simples",q:"20 ml",r:240,g:232,b:128},{e:"🧊",n:"Misture bem com gelo",q:"a gosto",r:180,g:230,b:248},{e:"🫐",n:"Calda de Jabuticaba — forma circular",q:"a gosto",r:80,g:32,b:160},{e:"🍋",n:"Limão desidratado",q:"decoração",r:240,g:200,b:80}]},
-  {name:"Beleza Americana",serve:"On the Rock",glass:"rock",prep:"Acrescente ao copo",finalColor:"rgba(220,80,140,0.78)",
+  {name:"Beleza Americana",serve:"On the Rock",glass:"rock",prep:"Acrescente ao copo",profile:"🌹 Floral · Doce",finalColor:"rgba(220,80,140,0.78)",
    ings:[{e:"🍋",n:"Limão siciliano",q:"15 ml",r:212,g:216,b:32},{e:"🍋",n:"Limão taiti",q:"15 ml",r:176,g:216,b:32},{e:"🍸",n:"Dose de Gin ou Vodka",q:"50 ml",r:192,g:234,b:248},{e:"🌹",n:"Xarope de rosas",q:"50 ml",r:224,g:96,b:128},{e:"🌸",n:"Pétala de rosa",q:"decoração",r:248,g:176,b:200}]},
-  {name:"Meu Primeiro Amor",serve:"Taça de Gin",glass:"gin",prep:"Acrescente na taça",finalColor:"rgba(200,80,60,0.72)",
-   ings:[{e:"🍋",n:"Limão taiti",q:"40 ml",r:176,g:216,b:32},{e:"🍸",n:"Gin",q:"50 ml",r:192,g:234,b:248},{e:"🍓",n:"Xarope de amora",q:"25 ml",r:192,g:24,b:80},{e:"🧊",n:"Gelo e água tônica — até quase completar",q:"completar",r:208,g:244,b:255},{e:"🍍",n:"Espuma de abacaxi com siciliano",q:"por cima",r:248,g:240,b:144},{e:"🍊",n:"Rodela de laranja",q:"decoração",r:240,g:144,b:48}]},
-  {name:"Moscow/London Mule",serve:"Caneca de Cobre",glass:"mug",prep:"Acrescente na caneca",finalColor:"rgba(0,180,160,0.72)",
+  {name:"Meu Primeiro Amor",serve:"Taça de Gin",glass:"gin",prep:"Acrescente na taça",profile:"🍓 Frutado · Refrescante",finalColor:"rgba(200,80,60,0.72)",
+   ings:[{e:"🍋",n:"Limão taiti",q:"40 ml",r:176,g:216,b:32},{e:"🍸",n:"Gin",q:"50 ml",r:192,g:234,b:248},{e:"🍓",n:"Xarope de amora",q:"25 ml",r:192,g:24,b:80},{e:"🧊",n:"Gelo e água tônica — até quase completar",q:"completar",r:208,g:244,b:255},{e:"🍍",n:"Espuma de abacaxi com siciliano",q:"por cima",r:248,g:240,b:144}]},
+  {name:"Moscow/London Mule",serve:"Caneca de Cobre",glass:"mug",prep:"Acrescente na caneca",profile:"🫚 Picante · Refrescante",finalColor:"rgba(0,180,160,0.72)",
    ings:[{e:"🍋",n:"Limão taiti",q:"25 ml",r:176,g:216,b:32},{e:"🍸",n:"Gin ou Vodka",q:"50 ml",r:192,g:234,b:248},{e:"🫚",n:"Xarope de gengibre",q:"50 ml",r:200,g:128,b:32},{e:"🧊",n:"Gelos maiores + água com gás",q:"completar",r:208,g:248,b:248},{e:"✨",n:"Espuma",q:"por cima",r:240,g:240,b:240},{e:"🍋",n:"Limão desidratado ou hortelã",q:"decoração",r:200,g:230,b:120}]},
-  {name:"Aperol Spritz",serve:"Taça de Gin",glass:"gin",prep:"Acrescente no copo",finalColor:"rgba(240,90,20,0.78)",
+  {name:"Aperol Spritz",serve:"Taça de Gin",glass:"gin",prep:"Acrescente no copo",profile:"🍊 Leve · Refrescante",finalColor:"rgba(240,90,20,0.78)",
    ings:[{e:"🍾",n:"Espumante",q:"100 ml",r:240,g:232,b:96},{e:"🍊",n:"Aperol",q:"75 ml",r:240,g:80,b:16},{e:"💧",n:"Água gasosa ou tônica",q:"50 ml",r:208,g:240,b:255},{e:"🍊",n:"Rodela de laranja",q:"01 unid.",r:240,g:144,b:32},{e:"🧊",n:"Gelo",q:"a gosto",r:180,g:230,b:248}]},
-  {name:"Penicillin",serve:"On the Rock",glass:"rock",prep:"Acrescente ao copo",finalColor:"rgba(200,150,30,0.82)",
+  {name:"Penicillin",serve:"On the Rock",glass:"rock",prep:"Acrescente ao copo",profile:"🍯 Doce · Picante",finalColor:"rgba(200,150,30,0.82)",
    ings:[{e:"🍯",n:"Xarope de mel",q:"25 ml",r:196,g:160,b:20},{e:"🍋",n:"Limão siciliano",q:"25 ml",r:212,g:216,b:32},{e:"🫚",n:"Xarope de gengibre",q:"20 ml",r:200,g:128,b:32},{e:"🥃",n:"Whisky",q:"50 ml",r:200,g:144,b:48},{e:"🧊",n:"Misturar bem com gelo",q:"a gosto",r:180,g:230,b:248},{e:"🍋",n:"Limão desidratado",q:"decoração",r:240,g:200,b:80}]},
-  {name:"Perfume de Mulher",serve:"Ilha Bela Long Drink",glass:"longdrink",prep:"Acrescente na coqueteleira",finalColor:"rgba(220,60,80,0.75)",
+  {name:"Perfume de Mulher",serve:"Ilha Bela Long Drink",glass:"longdrink",prep:"Acrescente na coqueteleira",profile:"🍉 Frutado · Doce",finalColor:"rgba(220,60,80,0.75)",
    ings:[{e:"🍉",n:"Melancia — macerar 2 pedaços",q:"2 pedaços",r:220,g:60,b:80},{e:"🌺",n:"Maracujá",q:"01 concha",r:240,g:140,b:40},{e:"🍋",n:"Limão taiti",q:"25 ml",r:176,g:216,b:32},{e:"🍹",n:"Rum",q:"50 ml",r:200,g:100,b:30},{e:"🍊",n:"Xarope de tangerina",q:"25 ml",r:240,g:160,b:40},{e:"🧊",n:"Bata com gelo — coagem simples",q:"a gosto",r:180,g:230,b:248},{e:"✨",n:"Espuma de siciliano + raminho de alecrim",q:"decoração",r:240,g:240,b:240}]},
-  {name:"O Último Samurai",serve:"Ilha Bela Long Drink",glass:"longdrink",prep:"Acrescente na coqueteleira",finalColor:"rgba(100,60,160,0.75)",
+  {name:"O Último Samurai",serve:"Ilha Bela Long Drink",glass:"longdrink",prep:"Acrescente na coqueteleira",profile:"🍇 Frutado · Herbal",finalColor:"rgba(100,60,160,0.75)",
    ings:[{e:"🍇",n:"Uvas — encher o fundo",q:"a gosto",r:120,g:60,b:160},{e:"🍬",n:"Xarope simples",q:"20 ml",r:240,g:232,b:128},{e:"🧊",n:"Macerar",q:"—",r:180,g:180,b:200},{e:"🍋",n:"Limão taiti",q:"15 ml",r:176,g:216,b:32},{e:"🍸",n:"Vodka ou Sake",q:"50 ml",r:192,g:234,b:248},{e:"🌿",n:"Manjericão — bata com gelo",q:"5-6 folhas",r:40,g:136,b:46},{e:"🌿",n:"Ramo pequeno de manjericão",q:"decoração",r:80,g:160,b:60}]},
-  {name:"Show Bar",serve:"Lagoão",glass:"longdrink",prep:"Acrescente na coqueteleira",finalColor:"rgba(180,40,80,0.78)",
+  {name:"Show Bar",serve:"Lagoão",glass:"longdrink",prep:"Acrescente na coqueteleira",profile:"🍓 Frutado · Intenso",finalColor:"rgba(180,40,80,0.78)",
    ings:[{e:"🍋",n:"Limão Siciliano — macerar 2 canoas",q:"2 canoas",r:212,g:216,b:32},{e:"🍓",n:"Collins Morango",q:"100 ml",r:220,g:40,b:80},{e:"🍋",n:"Limão Siciliano",q:"10 ml",r:212,g:216,b:32},{e:"🍬",n:"Xarope Showbar",q:"50 ml",r:240,g:180,b:60},{e:"🍸",n:"Vodka",q:"50 ml",r:192,g:234,b:248},{e:"🧊",n:"Bata com gelo",q:"a gosto",r:180,g:230,b:248},{e:"🌶️",n:"Pimenta dedo de moça — dentro do copo",q:"decoração",r:200,g:40,b:40}]},
-  {name:"Patch Adams",serve:"Taça de Gin",glass:"gin",prep:"Acrescente na taça",finalColor:"rgba(200,80,200,0.72)",
+  {name:"Patch Adams",serve:"Taça de Gin",glass:"gin",prep:"Acrescente na taça",profile:"🌺 Tropical · Doce",finalColor:"rgba(200,80,200,0.72)",
    ings:[{e:"🍊",n:"Rodela de siciliano",q:"01 unid.",r:240,g:200,b:60},{e:"🍋",n:"Limão taiti",q:"15 ml",r:176,g:216,b:32},{e:"🍸",n:"Gin",q:"50 ml",r:192,g:234,b:248},{e:"🌺",n:"Xarope de maracujá vermelho",q:"25 ml",r:220,g:80,b:160},{e:"🧊",n:"Gelo e água tônica — até quase completar",q:"completar",r:208,g:244,b:255},{e:"✨",n:"Espuma de tangerina + ramo de alecrim",q:"decoração",r:240,g:180,b:80}]},
-  {name:"Dirty Dancing",serve:"Ilha Bela",glass:"longdrink",prep:"Acrescente na coqueteleira",finalColor:"rgba(160,30,100,0.8)",
+  {name:"Dirty Dancing",serve:"Ilha Bela",glass:"longdrink",prep:"Acrescente na coqueteleira",profile:"🫐 Frutado · Intenso",finalColor:"rgba(160,30,100,0.8)",
    ings:[{e:"🍓",n:"Colins morangos",q:"70 ml",r:220,g:40,b:80},{e:"🫐",n:"Colins amoras",q:"30 ml",r:80,g:32,b:160},{e:"🍸",n:"Vodka",q:"50 ml",r:192,g:234,b:248},{e:"🌺",n:"Xarope de maracujá vermelho",q:"15 ml",r:220,g:80,b:160},{e:"🍇",n:"Licor de Cassis",q:"15 ml",r:100,g:20,b:120},{e:"🍋",n:"Limão taiti",q:"15 ml",r:176,g:216,b:32},{e:"🧊",n:"Bata com gelo e sirva",q:"a gosto",r:180,g:230,b:248}]},
-  {name:"Negroni",serve:"On the Rock",glass:"rock",prep:"Acrescente ao copo",finalColor:"rgba(200,40,40,0.82)",
+  {name:"Negroni",serve:"On the Rock",glass:"rock",prep:"Acrescente ao copo",profile:"🍊 Amargo · Intenso",finalColor:"rgba(200,40,40,0.82)",
    ings:[{e:"🍊",n:"Dose de Campari",q:"25 ml",r:200,g:40,b:40},{e:"🍸",n:"Dose de Gin",q:"25 ml",r:192,g:234,b:248},{e:"🍷",n:"Dose de Vermouth (Martini)",q:"25 ml",r:160,g:40,b:80},{e:"🍊",n:"01 pequeno dash de laranja bahia",q:"1 dash",r:240,g:144,b:32},{e:"🧊",n:"Misture e sirva com gelos maiores",q:"a gosto",r:180,g:230,b:248},{e:"🍊",n:"01 zest de laranja bahia",q:"decoração",r:240,g:144,b:32}]},
-  {name:"Capitães da Areia",serve:"On the Rock",glass:"rock",prep:"Acrescente na coqueteleira",finalColor:"rgba(180,120,40,0.8)",
+  {name:"Capitães da Areia",serve:"On the Rock",glass:"rock",prep:"Acrescente na coqueteleira",profile:"🌺 Tropical · Herbal",finalColor:"rgba(180,120,40,0.8)",
    ings:[{e:"🌺",n:"Maracujá",q:"2 conchas",r:240,g:200,b:40},{e:"🍋",n:"Limão taiti",q:"10 ml",r:176,g:216,b:32},{e:"🥃",n:"Cachaça",q:"50 ml",r:200,g:160,b:60},{e:"🫙",n:"Xarope de canela",q:"50 ml",r:180,g:80,b:20},{e:"🌿",n:"Cravos",q:"06 unid.",r:120,g:60,b:20},{e:"🧊",n:"Bata com gelo — coagem simples",q:"a gosto",r:180,g:230,b:248},{e:"🪵",n:"Canela em pau",q:"decoração",r:160,g:80,b:20}]},
-  {name:"Bem Vindo à Selva",serve:"Ilha Bela",glass:"longdrink",prep:"Acrescente ao copo",finalColor:"rgba(60,20,100,0.82)",
+  {name:"Bem Vindo à Selva",serve:"Ilha Bela",glass:"longdrink",prep:"Acrescente ao copo",profile:"🫐 Intenso · Energético",finalColor:"rgba(60,20,100,0.82)",
    ings:[{e:"🍸",n:"Vodka",q:"50 ml",r:192,g:234,b:248},{e:"🧊",n:"Gelo",q:"completar",r:176,g:224,b:240},{e:"🫐",n:"Açaí + xarope de banana + energético",q:"a gosto",r:60,g:20,b:100}]},
-  {name:"Madame Satã",serve:"Lagoão",glass:"longdrink",prep:"Acrescente na coqueteleira",finalColor:"rgba(180,100,20,0.8)",
+  {name:"Madame Satã",serve:"Lagoão",glass:"longdrink",prep:"Acrescente na coqueteleira",profile:"🍋 Cítrico · Doce",finalColor:"rgba(180,100,20,0.8)",
    ings:[{e:"🍋",n:"Limão capeta — cortado em canoas",q:"1 limão",r:200,g:220,b:40},{e:"🍯",n:"Xarope de mel — macerar",q:"50 ml",r:196,g:160,b:20},{e:"🥃",n:"Cachaça de jambu",q:"50 ml",r:200,g:160,b:60},{e:"🧊",n:"Bata com gelo",q:"a gosto",r:180,g:230,b:248},{e:"🍬",n:"Borda de açúcar de canela",q:"decoração",r:200,g:140,b:40}]},
-  {name:"O Mágico de Oz",serve:"Taça de Gin",glass:"gin",prep:"Acrescente ao copo",finalColor:"rgba(30,160,80,0.75)",
+  {name:"O Mágico de Oz",serve:"Taça de Gin",glass:"gin",prep:"Acrescente ao copo",profile:"🌿 Herbal · Refrescante",finalColor:"rgba(30,160,80,0.75)",
    ings:[{e:"🧂",n:"Borda de sal de alecrim",q:"borda",r:240,g:240,b:220},{e:"🌿",n:"6 folhas de hortelã — macerar levemente",q:"6 folhas",r:40,g:180,b:80},{e:"🍸",n:"Gin",q:"50 ml",r:192,g:234,b:248},{e:"🍐",n:"Xarope de pera",q:"50 ml",r:200,g:230,b:100},{e:"🍋",n:"Limão taiti",q:"25 ml",r:176,g:216,b:32},{e:"💧",n:"Misturar com gelo e completar c/ água com gás",q:"completar",r:208,g:248,b:255}]},
-  {name:"Memórias de uma Gueixa",serve:"On the Rock",glass:"rock",prep:"Acrescente na coqueteleira",finalColor:"rgba(240,180,200,0.75)",
+  {name:"Memórias de uma Gueixa",serve:"On the Rock",glass:"rock",prep:"Acrescente na coqueteleira",profile:"🍈 Floral · Suave",finalColor:"rgba(240,180,200,0.75)",
    ings:[{e:"🍈",n:"Xarope de lichia",q:"25 ml",r:240,g:200,b:220},{e:"🍋",n:"Suco de siciliano",q:"25 ml",r:212,g:216,b:32},{e:"🍶",n:"Saquê",q:"100 ml",r:240,g:240,b:240},{e:"🧊",n:"Bata com gelo — coagem simples",q:"a gosto",r:180,g:230,b:248},{e:"🧂",n:"Borda de sal de pimenta rosa",q:"decoração",r:220,g:120,b:140}]},
-  {name:"Triplo X",serve:"Taça de Gin",glass:"gin",prep:"Acrescente na coqueteleira",finalColor:"rgba(180,220,60,0.75)",
+  {name:"Triplo X",serve:"Taça de Gin",glass:"gin",prep:"Acrescente na coqueteleira",profile:"🍋 Cítrico · Intenso",finalColor:"rgba(180,220,60,0.75)",
    ings:[{e:"🍋",n:"Limão siciliano — macerar 2 canoas",q:"2 canoas",r:212,g:216,b:32},{e:"🍋",n:"Limão taiti — macerar 2 canoas",q:"2 canoas",r:176,g:216,b:32},{e:"🌶️",n:"Limão capeta — macerar 2 canoas",q:"2 canoas",r:200,g:220,b:40},{e:"🌿",n:"Xarope Capim Limão",q:"50 ml",r:160,g:220,b:60},{e:"🍬",n:"Xarope simples",q:"10 ml",r:240,g:232,b:128},{e:"🥃",n:"Cachaça",q:"50 ml",r:200,g:160,b:60},{e:"🧊",n:"Bata com gelo e sirva",q:"a gosto",r:180,g:230,b:248}]},
-  {name:"Indiana Jones",serve:"Lagoão",glass:"longdrink",prep:"Acrescente no copo",finalColor:"rgba(240,160,40,0.78)",
+  {name:"Indiana Jones",serve:"Lagoão",glass:"longdrink",prep:"Acrescente no copo",profile:"🍊 Doce · Herbal",finalColor:"rgba(240,160,40,0.78)",
    ings:[{e:"🌿",n:"Hortelã — macerar levemente",q:"4-5 folhas",r:40,g:180,b:80},{e:"🍋",n:"Limão siciliano",q:"25 ml",r:212,g:216,b:32},{e:"🍋",n:"Limão taiti",q:"10 ml",r:176,g:216,b:32},{e:"🥜",n:"Xarope de amêndoas",q:"10 ml",r:200,g:140,b:60},{e:"🍊",n:"Xarope de tangerina",q:"40 ml",r:240,g:160,b:40},{e:"🍶",n:"Sake ou Vodka",q:"50 ml",r:192,g:234,b:248},{e:"🍬",n:"Borda de açúcar de canela",q:"decoração",r:200,g:140,b:40}]},
-  {name:"Mad Max",serve:"On the Rock",glass:"rock",prep:"Acrescente na coqueteleira",finalColor:"rgba(200,150,40,0.82)",
+  {name:"Mad Max",serve:"On the Rock",glass:"rock",prep:"Acrescente na coqueteleira",profile:"🌺 Tropical · Intenso",finalColor:"rgba(200,150,40,0.82)",
    ings:[{e:"🌺",n:"Maracujá",q:"02 conchas",r:240,g:200,b:40},{e:"🍋",n:"Limão taiti",q:"10 ml",r:176,g:216,b:32},{e:"🍮",n:"Xarope Caramelo Salgado",q:"25 ml",r:200,g:140,b:30},{e:"🥃",n:"Whisky",q:"50 ml",r:200,g:144,b:48},{e:"🧊",n:"Bata com gelo — coagem simples",q:"a gosto",r:180,g:230,b:248},{e:"🌿",n:"1 folha de louro",q:"decoração",r:80,g:140,b:60}]},
-  {name:"Ainda Estou Aqui",serve:"Long Drink",glass:"longdrink",prep:"Acrescente na coqueteleira",finalColor:"rgba(100,200,80,0.75)",
-   ings:[{e:"🍋",n:"Limão siciliano — macerar 2 canoas",q:"2 canoas",r:212,g:216,b:32},{e:"🌶️",n:"Limão capeta — macerar 2 canoas",q:"2 canoas",r:200,g:220,b:40},{e:"🍋",n:"Limão taiti",q:"10 ml",r:176,g:216,b:32},{e:"🍐",n:"Xarope Pera",q:"50 ml",r:200,g:230,b:100},{e:"🍸",n:"Vodka",q:"50 ml",r:192,g:234,b:248},{e:"🌿",n:"Manjericão",q:"8 folhas",r:40,g:136,b:46},{e:"🧊",n:"Bata com gelo — coagem simples",q:"a gosto",r:180,g:230,b:248},{e:"🌿",n:"Ramo pequeno de manjericão",q:"decoração",r:80,g:160,b:60}]},
-  {name:"È Diferente",serve:"Taça de Gin",glass:"gin",prep:"Acrescente ao copo",finalColor:"rgba(30,160,80,0.75)",
+  {name:"Ainda Estou Aqui",serve:"Long Drink",glass:"longdrink",prep:"Acrescente na coqueteleira",profile:"🌿 Herbal · Cítrico",finalColor:"rgba(100,200,80,0.75)",
+   ings:[{e:"🍋",n:"Limão siciliano — macerar 2 canoas",q:"2 canoas",r:212,g:216,b:32},{e:"🌶️",n:"Limão capeta — macerar 2 canoas",q:"2 canoas",r:200,g:220,b:40},{e:"🍋",n:"Limão taiti — macerar",q:"10 ml",r:176,g:216,b:32},{e:"🍐",n:"Xarope Pera",q:"50 ml",r:200,g:230,b:100},{e:"🍸",n:"Vodka",q:"50 ml",r:192,g:234,b:248},{e:"🌿",n:"Manjericão",q:"8 folhas",r:40,g:136,b:46},{e:"🧊",n:"Bata com gelo — coagem simples",q:"a gosto",r:180,g:230,b:248},{e:"🌿",n:"Ramo pequeno de manjericão",q:"decoração",r:80,g:160,b:60}]},
+  {name:"È Diferente",serve:"Taça de Gin",glass:"gin",prep:"Acrescente ao copo",profile:"🌿 Herbal · Refrescante",finalColor:"rgba(30,160,80,0.75)",
    ings:[{e:"🧂",n:"Borda de sal de alecrim",q:"borda",r:240,g:240,b:220},{e:"🌿",n:"6 folhas de hortelã — macerar levemente",q:"6 folhas",r:40,g:180,b:80},{e:"🍸",n:"Gin",q:"50 ml",r:192,g:234,b:248},{e:"🍐",n:"Xarope de pera",q:"50 ml",r:200,g:230,b:100},{e:"🍋",n:"Limão taiti",q:"25 ml",r:176,g:216,b:32},{e:"💧",n:"Misturar com gelo e completar c/ água com gás",q:"completar",r:208,g:248,b:255}]}
 ];
  
@@ -519,7 +404,6 @@ const DRINKS = [
 // STATE
 // ─────────────────────────────────────────
 let currentDrink=null, currentIdx=0, doneCount=0, isPouring=false, liquidLayers=[];
-let cardMode=false;
  
 // ─────────────────────────────────────────
 // NAVIGATION
@@ -544,7 +428,7 @@ function goBack(){flashGo(()=>showScreen('select'));}
   DRINKS.forEach((d,i)=>{
     const el=document.createElement('div');
     el.className='drink-slot';
-    el.innerHTML=`<div><div class="slot-num">${String(i+1).padStart(2,'0')}</div><div class="slot-name">${d.name}</div></div><div><div class="slot-type">${d.serve}</div><div class="slot-prep">${d.prep}</div></div>`;
+    el.innerHTML=`<div><div class="slot-num">${String(i+1).padStart(2,'0')}</div><div class="slot-name">${d.name}</div></div><div><div class="slot-type">${d.serve}</div><div class="slot-prep">${d.prep}</div><div class="slot-profile">${d.profile||''}</div></div>`;
     el.addEventListener('click',()=>openDrink(i));
     g.appendChild(el);
   });
@@ -654,13 +538,6 @@ function openDrink(i){
 function buildDrinkScreen(){
   const d=currentDrink;
  
-  // reset card mode
-  cardMode=false;
-  document.getElementById('ing-scroll').style.display='flex';
-  document.getElementById('card-grid').style.display='none';
-  document.getElementById('card-grid').innerHTML='';
-  document.getElementById('toggle-mode-btn').textContent='🃏 ESCONDER';
- 
   // topbar
   document.getElementById('d-title').textContent=d.name;
   document.getElementById('d-serve').textContent=d.serve;
@@ -735,7 +612,6 @@ function pour(idx){
     doneCount++;
     document.getElementById('d-progress').style.width=(doneCount/d.ings.length*100)+'%';
     isPouring=false;
-    syncCardState();
     if(doneCount===d.ings.length) onDone();
   },1050);
 }
@@ -773,88 +649,8 @@ function onDone(){
   },i*400);
 }
  
-function toggleMode(){
-  cardMode=!cardMode;
-  const btn=document.getElementById('toggle-mode-btn');
-  const list=document.getElementById('ing-scroll');
-  const grid=document.getElementById('card-grid');
-  if(cardMode){
-    list.style.display='none';
-    grid.style.display='grid';
-    btn.textContent='📋 MOSTRAR';
-    buildCards();
-  } else {
-    grid.style.display='none';
-    list.style.display='flex';
-    btn.textContent='🃏 ESCONDER';
-  }
-}
- 
-function buildCards(){
-  const d=currentDrink;
-  const grid=document.getElementById('card-grid');
-  grid.innerHTML=d.ings.map((ing,j)=>{
-    const isDone=j<doneCount;
-    return `
-    <div class="fc-wrap${isDone?' flipped poured':''}" id="fc-${j}" onclick="flipCard(${j})">
-      <div class="fc-inner">
-        <div class="fc-face fc-back">
-          <div class="fc-back-num">${String(j+1).padStart(2,'0')}</div>
-          <div class="fc-back-q">🃏</div>
-          <div class="fc-back-hint">toque para ver</div>
-        </div>
-        <div class="fc-face fc-front">
-          <div class="fc-emoji">${ing.e}</div>
-          <div class="fc-name">${ing.n}</div>
-          <div class="fc-qty">${ing.q}</div>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
- 
-  // set card height based on width
-  requestAnimationFrame(()=>{
-    const cards=grid.querySelectorAll('.fc-wrap');
-    if(!cards.length) return;
-    const w=cards[0].offsetWidth;
-    cards.forEach(c=>{c.style.height=Math.round(w*1.1)+'px';});
-  });
-}
- 
-function flipCard(idx){
-  const d=currentDrink;
-  // In card mode, tapping also triggers the pour if it's the next in order
-  const wrap=document.getElementById(`fc-${idx}`);
-  if(!wrap) return;
- 
-  const alreadyFlipped=wrap.classList.contains('flipped');
- 
-  // flip visual regardless
-  wrap.classList.toggle('flipped');
- 
-  // if flipping face-up (revealing) AND it's the next ingredient → trigger pour
-  if(!alreadyFlipped && idx===doneCount && !isPouring){
-    pour(idx);
-  }
-}
- 
-function syncCardState(){
-  // after a pour completes, sync card grid if visible
-  const d=currentDrink;
-  if(!cardMode) return;
-  d.ings.forEach((_,j)=>{
-    const wrap=document.getElementById(`fc-${j}`);
-    if(!wrap) return;
-    if(j<doneCount){
-      wrap.classList.add('flipped','poured');
-    }
-  });
-}
- 
- 
- 
 function resetDrink(){
-  liquidLayers=[];doneCount=0;isPouring=false;cardMode=false;
+  liquidLayers=[];doneCount=0;isPouring=false;
   buildDrinkScreen();
 }
  
